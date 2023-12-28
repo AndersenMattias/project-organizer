@@ -1,3 +1,4 @@
 import { projectsRouter } from './projects'
+import { tasksRouter } from './tasks'
 
-export { projectsRouter }
+export { projectsRouter, tasksRouter }
