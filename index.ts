@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import express, { Express, Request, Response } from 'express'
 import cors from 'cors'
-import { projectsRouter, tasksRouter } from './routes'
+import { employeesRouter, projectsRouter, tasksRouter } from './routes'
 
 dotenv.config()
 
@@ -12,6 +12,7 @@ app.use(cors())
 
 app.use('/api', projectsRouter)
 app.use('/api', tasksRouter)
+app.use('/api', employeesRouter)
 
 app.get('/', async (req: Request, res: Response) => {
   res.json({ message: 'Hello from server side!' })
