@@ -7,7 +7,7 @@ import ProjectDetails from './components/ProjectDetails'
 
 function App() {
   return (
-    <>
+    <div className='flex flex-col min-h-screen'>
       <Header />
 
       <Routes>
@@ -16,7 +16,7 @@ function App() {
         <Route path='*' element={<NotFound />} />
       </Routes>
       <Footer />
-    </>
+    </div>
   )
 }
 
