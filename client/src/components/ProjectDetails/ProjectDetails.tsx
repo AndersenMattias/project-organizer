@@ -5,6 +5,8 @@ import { TaskType } from '../../types/tasks'
 import { formatDate } from '../../utils'
 import TaskModal from '../TaskModal'
 
+import { IconTrash, IconEdit } from '@tabler/icons-react'
+
 const ProjectDetails = () => {
   const { projectId } = useParams()
   const { projects } = useProjects()
@@ -38,10 +40,27 @@ const ProjectDetails = () => {
   if (!selectedProject) {
     return <div>Project not found</div>
   }
-  console.log(
-    '🚀 ~ file: ProjectDetails.tsx:9 ~ ProjectDetails ~ tasks:',
-    tasks
-  )
+
+  async function onDeleteTask(taskId: number) {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/tasks/${taskId}`,
+        {
+          method: 'DELETE',
+        }
+      )
+      if (response.ok) {
+        const task = await response.json()
+        console.log('Task deleted:', task)
+      } else {
+        console.error('Failed to delete task')
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        console.error(e.message)
+      }
+    }
+  }
 
   return (
     <section className='container mx-auto mt-8'>
@@ -76,21 +95,35 @@ const ProjectDetails = () => {
             Add Task
           </button>
         </div>
+
         {tasks.length === 0 ? (
           <p>No tasks available for this project.</p>
         ) : (
           <ul className='divide-y divide-gray-200'>
             {tasks.map((task) => (
-              <li key={task.task_id} className='py-4'>
-                <div className='flex items-center justify-between'>
+              <li key={task.task_id} className='py-4 relative group'>
+                <div className='flex'>
+                  <h3 className='text-xl font-bold'>{task.name}</h3>
+                  <div className='opacity-0 group-hover:opacity-100 transition-opacity'>
+                    <button className='p-2 text-gray-500 hover:text-gray-700'>
+                      <IconEdit size={18} />
+                    </button>
+                    <button className='p-2 text-red-500 hover:text-red-700'>
+                      <IconTrash
+                        size={18}
+                        onClick={() => onDeleteTask(task.task_id)}
+                      />
+                    </button>
+                  </div>
+                </div>
+                <div className='flex items-center'>
                   <div>
-                    <h3 className='text-xl font-bold'>{task.name}</h3>
                     <p>{task.task_description}</p>
                     <p className='text-gray-500'>
                       Employee: {task.employee_name}
                     </p>
                   </div>
-                  <div className='flex items-center'>
+                  <div className='flex items-center ml-auto'>
                     <p className='mr-4'>
                       Due Date: {formatDate(task.due_date)}
                     </p>
@@ -112,7 +145,11 @@ const ProjectDetails = () => {
           </ul>
         )}
       </div>
-      <TaskModal isOpen={isModalOpen} onClose={closeModal} />
+      <TaskModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        selectedProject={selectedProject}
+      />
     </section>
   )
 }
